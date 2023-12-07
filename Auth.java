@@ -1,9 +1,9 @@
 import java.util.Scanner;
 
 public class Auth {
+
     private static final String defaultUsername = "random";
     private static final String defaultPassword = "strongpassword";
-
     public static boolean authentication(){
         Scanner scanner = new Scanner(System.in);
         System.out.print("Veuillez entrer votre nom d'utilisateur: ");

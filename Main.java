@@ -2,23 +2,12 @@ import java.util.Scanner;
 
 public class Main {
 
-    private static final String defaultUsername = "Dinasoa";
-    private static final String defaultPassword = "averystrongpassword";
-
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Veuillez entrer votre nom d'utilisateur: ");
-        String username = scanner.nextLine();
-        System.out.print("Veuillez confirmer votre identité en tapant le mot de passe: ");
-        String userPassword = scanner.nextLine();
-
-        if (!username.equals(defaultUsername) || !userPassword.equals(defaultPassword)) {
-            System.out.println("Oups, vous n'avez pas accès à ce wallet, désolé.");
-        } else {
-            int choice;
-
+        int choice;
+        if (Auth.authentication() == true) {
             do {
-                System.out.println("Bienvenue dans 'Wallet' " + defaultUsername + ", veuillez choisir une action à effectuer:"
+                System.out.println("Bienvenue dans 'Wallet' , veuillez choisir une action à effectuer:"
                         + "\n1- Voir le solde dans mon compte"
                         + "\n2- Faire un dépôt"
                         + "\n3- Faire un retrait"
@@ -58,3 +47,4 @@ public class Main {
         }
     }
 }
+
