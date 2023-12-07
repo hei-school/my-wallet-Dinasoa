@@ -1,11 +1,10 @@
+import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Wallet {
-
-  private static ArrayList<String> transactions = new ArrayList<>();
+  private static final ArrayList<Transaction> transactions = new ArrayList<>();
   private static double solde = 0;
-  private static double monthlyBudget = 200000;
   private static final String defaultUsername = "Dinasoa";
   private static final String defaultPassword = "averystrongpassword";
 
@@ -21,7 +20,8 @@ public class Wallet {
       double amount = Double.parseDouble(amountStr);
       if (amount > 0) {
         solde += amount;
-        transactions.add("Dépôt de " + amount + " Ar");
+        Transaction transaction = new Transaction(amount, "Depot");
+        transactions.add(transaction);
         System.out.println("Dépôt effectué!");
       } else {
         System.out.println("Le montant que vous avez saisi est invalide, veuillez vérifier!");
@@ -40,7 +40,8 @@ public class Wallet {
       if (amount > 0) {
         if (amount <= solde) {
           solde -= amount;
-          transactions.add("Retrait de " + amount + " Ar");
+          Transaction transaction = new Transaction(amount, "Retrait");
+          transactions.add(transaction);
           System.out.println("Retrait effectué.");
         } else {
           System.out.println("Votre solde est insuffisant.");
@@ -55,8 +56,8 @@ public class Wallet {
 
   public static void showTransactions() {
     System.out.println("Historique de transactions:");
-    for (String transaction : transactions) {
-      System.out.println(transaction);
+    for (Transaction transaction : transactions) {
+      System.out.println(transaction.getTransactionType() + " de " + transaction.getAmount());
     }
   }
 
@@ -67,8 +68,7 @@ public class Wallet {
     try {
       double budget = Double.parseDouble(budgetStr);
       if (budget > 0) {
-        monthlyBudget = budget;
-        System.out.println("Votre budget mensuel a été mis à jour: " + monthlyBudget + " Ar");
+        System.out.println("Votre budget mensuel a été mis à jour: " + budget + " Ar");
       } else {
         System.out.println("Montant invalide.");
       }
