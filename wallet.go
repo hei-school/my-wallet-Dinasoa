@@ -3,366 +3,315 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
-var solde float64
-var transactions []string
-var cards []Card
-var identityCards []CIN
-var driverLicenses []DriverLicense
-var visitCards []VisitCard
-
 type Card struct {
-	CardType       string
-	Amount         float64
+	Type           string
+	Amount         string
 	ExpirationDate string
 	CardHolder     string
 	CardNumber     string
 }
 
 type CIN struct {
-	Firstname    string
-	Lastname     string
-	Birthdate    string
-	DeliveryDate string
+	LastName      string
+	FirstName     string
+	Birthdate     string
+	DeliveryDate  string
 }
 
 type DriverLicense struct {
-	Firstname     string
-	Lastname      string
-	Birthdate     string
-	LicenseTypes  []string
+	LastName   string
+	FirstName  string
+	Birthdate  string
+	LicenseTypes []string
 }
 
 type VisitCard struct {
-	Lastname    string
-	Firstname   string
-	Function    string
+	LastName    string
+	FirstName   string
+	Position    string
 	CompanyName string
 }
+
+var solde = 0.0
+var cards []Card
+var identityCard []CIN
+var driverLicense []DriverLicense
+var driverLicenseTypes []string
+var visitCards []VisitCard
 
 func showBalance() {
 	fmt.Printf("Votre solde actuel: %.2f Ar\n", solde)
 }
 
-func deposit() {
+func depositCash() {
 	var amountStr string
 	fmt.Print("Veuillez saisir le montant à déposer: Ar ")
-	fmt.Scan(&amountStr)
+	fmt.Scanln(&amountStr)
 
 	amount, err := strconv.ParseFloat(amountStr, 64)
-	if err != nil {
-		fmt.Println("Montant invalide, veuillez vérifier!")
-		return
-	}
-
-	if amount > 0 {
+	if err == nil && amount > 0 {
 		solde += amount
-		transactions = append(transactions, fmt.Sprintf("Depot de %.2f Ar.", amount))
 		fmt.Println("Dépôt effectué!")
 	} else {
-		fmt.Println("Le montant doit être supérieur à zéro.")
+		fmt.Println("Le montant que vous avez saisi est invalide, veuillez vérifier!")
 	}
 }
 
-func withdraw() {
+func withdrawCash() {
 	var amountStr string
 	fmt.Print("Veuillez saisir le montant à retirer: Ar ")
-	fmt.Scan(&amountStr)
+	fmt.Scanln(&amountStr)
 
 	amount, err := strconv.ParseFloat(amountStr, 64)
-	if err != nil {
-		fmt.Println("Montant invalide, veuillez vérifier!")
-		return
-	}
-
-	if amount <= solde {
-		solde -= amount
-		transactions = append(transactions, fmt.Sprintf("Retrait de %.2f Ar.", amount))
-		fmt.Println("Retrait effectué.")
+	if err == nil && amount > 0 {
+		if amount <= solde {
+			solde -= amount
+			fmt.Println("Retrait effectué.")
+		} else {
+			fmt.Println("Votre solde est insuffisant.")
+		}
 	} else {
-		fmt.Println("Votre solde est insuffisant.")
+		fmt.Println("Montant invalide.")
 	}
 }
 
 func depositCard() {
-	var cardType, amountStr, expirationDate, cardHolder, cardNumber string
+	var cardType, amount, expirationDate, cardHolder, cardNumber string
 	fmt.Print("Veuillez saisir le type de carte: ")
-	fmt.Scan(&cardType)
-
-	fmt.Print("Veuillez saisir le montant dans votre carte: Ar ")
-	fmt.Scan(&amountStr)
-
-	amount, err := strconv.ParseFloat(amountStr, 64)
-	if err != nil {
-		fmt.Println("Montant invalide, veuillez vérifier!")
-		return
-	}
-
+	fmt.Scanln(&cardType)
+	fmt.Print("Veuillez saisir le montant dans votre carte: ")
+	fmt.Scanln(&amount)
 	fmt.Print("Veuillez saisir la date d'expiration de la carte: ")
-	fmt.Scan(&expirationDate)
-
+	fmt.Scanln(&expirationDate)
 	fmt.Print("Veuillez saisir le propriétaire de cette carte: ")
-	fmt.Scan(&cardHolder)
-
+	fmt.Scanln(&cardHolder)
 	fmt.Print("Veuillez saisir le numéro de carte: ")
-	fmt.Scan(&cardNumber)
+	fmt.Scanln(&cardNumber)
 
-	card := Card{
-		CardType:       cardType,
-		Amount:         amount,
-		ExpirationDate: expirationDate,
-		CardHolder:     cardHolder,
-		CardNumber:     cardNumber,
-	}
-
-	solde += card.Amount
+	card := Card{Type: cardType, Amount: amount, ExpirationDate: expirationDate, CardHolder: cardHolder, CardNumber: cardNumber}
+	amountFloat, _ := strconv.ParseFloat(amount, 64)
+	solde += amountFloat
 	cards = append(cards, card)
+
 	fmt.Println("Votre carte bancaire a bien été déposée.")
 }
 
-func retrieveCard() {
+func recoveredCard() {
 	if len(cards) >= 1 {
 		fmt.Println("Cartes disponibles à récupérer:")
 		for i, card := range cards {
-			fmt.Printf("%d- Type: %s, Numéro de carte: %s\n", i+1, card.CardType, card.CardNumber)
+			fmt.Printf("%d- Type: %s, Numéro de carte: %s\n", i+1, card.Type, card.CardNumber)
 		}
 
 		var questionStr string
 		fmt.Print("Quelle carte voulez-vous récupérer (entrez le numéro correspondant): ")
-		fmt.Scan(&questionStr)
+		fmt.Scanln(&questionStr)
 
 		question, err := strconv.Atoi(questionStr)
-		if err != nil || question < 1 || question > len(cards) {
+		if err == nil && question >= 1 && question <= len(cards) {
+			cardIndex := question - 1
+			recoveredCard := cards[cardIndex]
+			solde -= amountToFloat(recoveredCard.Amount)
+			fmt.Printf("La carte récupérée: Type - %s, Numéro de carte - %s\n", recoveredCard.Type, recoveredCard.CardNumber)
+			cards = append(cards[:cardIndex], cards[cardIndex+1:]...)
+		} else {
 			fmt.Println("Veuillez ne saisir que les choix proposés.")
-			return
 		}
-
-		cardIndex := question - 1
-		retrievedCard := cards[cardIndex]
-		solde -= retrievedCard.Amount
-		cards = append(cards[:cardIndex], cards[cardIndex+1:]...)
-		fmt.Printf("La carte récupérée: Type - %s, Numéro de carte - %s\n", retrievedCard.CardType, retrievedCard.CardNumber)
 	} else {
-		fmt.Println("Vous n'avez aucune carte à récupérer")
+		fmt.Println("Vous n'avez aucune carte à récupérer.")
 	}
 }
 
 func depositCIN() {
-	var firstname, lastname, birthdate, deliveryDate string
-	fmt.Println("Veuillez entrer les informations sur votre CIN: ")
+	fmt.Println("Veuillez entrer les informations sur votre CIN:")
+	var lastName, firstName, birthdate, deliveryDate string
 	fmt.Print("Nom: ")
-	fmt.Scan(&lastname)
-	fmt.Print("Prénom: ")
-	fmt.Scan(&firstname)
+	fmt.Scanln(&lastName)
+	fmt.Print("Prenom: ")
+	fmt.Scanln(&firstName)
 	fmt.Print("Date de naissance: ")
-	fmt.Scan(&birthdate)
-	fmt.Print("Date de délivrance: ")
-	fmt.Scan(&deliveryDate)
+	fmt.Scanln(&birthdate)
+	fmt.Print("Date de delivrance: ")
+	fmt.Scanln(&deliveryDate)
 
-	// Utilisez append sur la variable globale identityCards
-	identityCard := CIN{
-		Firstname:    firstname,
-		Lastname:     lastname,
-		Birthdate:    birthdate,
-		DeliveryDate: deliveryDate,
+	identity := CIN{LastName: lastName, FirstName: firstName, Birthdate: birthdate, DeliveryDate: deliveryDate}
+
+	if len(identityCard) == 0 {
+		identityCard = append(identityCard, identity)
+		fmt.Println("Depot de CIN effectué.")
+	} else if len(identityCard) == 1 {
+		fmt.Println("Votre CIN devrait être unique.")
 	}
-
-	identityCards = append(identityCards, identityCard)
-	fmt.Println("Dépôt de CIN effectué. ")
 }
 
-
 func retrieveAndShowCIN() {
-	if len(identityCards) > 0 {
-		fmt.Println("CIN récupérée. ")
-		fmt.Printf("Les détails de votre CIN: \nNom: %s\nPrénom: %s\nDate de naissance: %s\nDate de délivrance: %s\n",
-			identityCards[0].Lastname, identityCards[0].Firstname, identityCards[0].Birthdate, identityCards[0].DeliveryDate)
-		identityCards = nil
+	if len(identityCard) > 0 {
+		fmt.Println("CIN récupérée.")
+		fmt.Printf("Les détails de votre CIN:\nNom: %s\nPrenom: %s\nDate de naissance: %s\nDate de delivrance: %s\n",
+			identityCard[0].LastName, identityCard[0].FirstName, identityCard[0].Birthdate, identityCard[0].DeliveryDate)
+		identityCard = nil
 	} else {
-		fmt.Println("Aucune carte d'identité identifiée. ")
+		fmt.Println("Aucune carte d'identité identifiée.")
 	}
 }
 
 func depositDriverLicense() {
-	var firstname, lastname, birthdate, licenseTypeStr string
-	fmt.Println("Veuillez entrer les informations sur votre permis de conduire: ")
+	fmt.Println("Veuillez entrez les informations sur votre permis de conduire:")
+	var lastName, firstName, birthdate, licenseTypesStr string
 	fmt.Print("Nom: ")
-	fmt.Scan(&lastname)
-	fmt.Print("Prénom: ")
-	fmt.Scan(&firstname)
+	fmt.Scanln(&lastName)
+	fmt.Print("Prenom: ")
+	fmt.Scanln(&firstName)
 	fmt.Print("Date de naissance: ")
-	fmt.Scan(&birthdate)
-	fmt.Print("Type de permis (séparez par une virgule si vous avez plus d'un type | a, b, c): ")
-	fmt.Scan(&licenseTypeStr)
+	fmt.Scanln(&birthdate)
+	fmt.Print("Type de permis (séparez par un virgule si vous avez plus qu'un type | a, b, c): ")
+	fmt.Scanln(&licenseTypesStr)
 
-	licenseTypes := make([]string, 0)
-	if len(licenseTypeStr) > 0 {
-		licenseTypes = append(licenseTypes, licenseTypeStr)
+	licenseTypes := strings.Split(licenseTypesStr, ",")
+
+	if len(driverLicense) == 0 {
+		driverLicense = append(driverLicense, DriverLicense{LastName: lastName, FirstName: firstName, Birthdate: birthdate, LicenseTypes: licenseTypes})
+		fmt.Println("Depot effectué.")
+	} else {
+		fmt.Println("Votre permis de conduire devrait être unique.")
 	}
-
-	driverLicense := DriverLicense{
-		Firstname:    firstname,
-		Lastname:     lastname,
-		Birthdate:    birthdate,
-		LicenseTypes: licenseTypes,
-	}
-
-	driverLicenses = append(driverLicenses, driverLicense)
-	fmt.Println("Dépôt effectué. ")
 }
 
 func retrieveAndShowDriverLicense() {
-	if len(driverLicenses) > 0 {
-		fmt.Println("Permis de conduire récupéré. ")
-		fmt.Printf("Les détails de votre permis: \nNom: %s\nPrénom: %s\nDate de naissance: %s\nType: %v\n",
-			driverLicenses[0].Lastname, driverLicenses[0].Firstname, driverLicenses[0].Birthdate, driverLicenses[0].LicenseTypes)
-		driverLicenses = nil
+	if len(driverLicense) > 0 {
+		fmt.Println("Permis de conduire récupéré.")
+		fmt.Printf("Les détails de votre permis:\nNom: %s\nPrenom: %s\nDate de naissance: %s\nType:\n",
+			driverLicense[0].LastName, driverLicense[0].FirstName, driverLicense[0].Birthdate)
+
+		for i, licenseType := range driverLicense[0].LicenseTypes {
+			fmt.Printf("%d - %s\n", i+1, licenseType)
+		}
+
+		driverLicense = nil
 	} else {
-		fmt.Println("Aucun permis de conduire identifié. ")
+		fmt.Println("Aucun permis de conduire identifié.")
 	}
 }
 
 func depositVisitCard() {
-	var lastname, firstname, function, companyName string
-	fmt.Println("Veuillez renseigner les informations de votre carte de visite: ")
+	fmt.Println("Veuillez renseigner les informations de votre carte de visite:")
+	var lastName, firstName, position, companyName string
 	fmt.Print("Nom: ")
-	fmt.Scan(&lastname)
-	fmt.Print("Prénom: ")
-	fmt.Scan(&firstname)
+	fmt.Scanln(&lastName)
+	fmt.Print("Prenom: ")
+	fmt.Scanln(&firstName)
 	fmt.Print("Poste: ")
-	fmt.Scan(&function)
+	fmt.Scanln(&position)
 	fmt.Print("Entreprise: ")
-	fmt.Scan(&companyName)
+	fmt.Scanln(&companyName)
 
 	if len(visitCards) <= 3 {
-		visitCard := VisitCard{
-			Lastname:    lastname,
-			Firstname:   firstname,
-			Function:    function,
-			CompanyName: companyName,
-		}
-		visitCards = append(visitCards, visitCard)
-		fmt.Println("Carte de visite enregistrée. ")
+		visitCards = append(visitCards, VisitCard{LastName: lastName, FirstName: firstName, Position: position, CompanyName: companyName})
+		fmt.Println("Carte de visite enregistrée.")
 	} else {
-		fmt.Println("Plus d'espace. ")
+		fmt.Println("Plus d'espace.")
 	}
 }
 
 func retrieveVisitCards() {
-	if len(visitCards) > 0 {
-		cardsToRemove := make([]int, 0)
+	var cardsToRemove []int
 
-		if len(visitCards) > 1 {
-			fmt.Println("Sélectionnez les cartes que vous voulez récupérer (ex: 1, 2):")
-			for i, visitCard := range visitCards {
-				fmt.Printf("%d - %s\n", i+1, visitCard.CompanyName)
-			}
+	if len(visitCards) == 0 {
+		fmt.Println("Vous n'avez aucune carte de visite dans votre wallet.")
+		return
+	}
 
-			var choiceStr string
-			fmt.Print("Carte à récupérer: ")
-			fmt.Scan(&choiceStr)
-
-			if len(choiceStr) > 0 {
-				if choiceStr[0] == ',' {
-					choiceStr = choiceStr[1:]
-				}
-				choices := append(cardsToRemove, convertStrToIntSlice(choiceStr)...)
-				cardsToRemove = uniqueIntSlice(choices)
-			}
-		} else {
-			cardsToRemove = append(cardsToRemove, 0)
+	if len(visitCards) > 1 {
+		fmt.Println("Sélectionnez les cartes que vous voulez récupérer (ex: 1,2):")
+		for i, visitCard := range visitCards {
+			fmt.Printf("%d - %s\n", i+1, visitCard.CompanyName)
 		}
 
-		for i := len(cardsToRemove) - 1; i >= 0; i-- {
-			index := cardsToRemove[i]
-			if index >= 0 && index < len(visitCards) {
-				removedCard := visitCards[index]
-				fmt.Printf("Carte récupérée: %s\n", removedCard.CompanyName)
-				visitCards = append(visitCards[:index], visitCards[index+1:]...)
+		var choice string
+		fmt.Print("Carte à récupérer: ")
+		fmt.Scanln(&choice)
+
+		if strings.Contains(choice, ",") {
+			indices := strings.Split(choice, ",")
+			for _, indexStr := range indices {
+				index, err := strconv.Atoi(indexStr)
+				if err == nil {
+					cardsToRemove = append(cardsToRemove, index-1)
+				}
+			}
+		} else {
+			index, err := strconv.Atoi(choice)
+			if err == nil {
+				cardsToRemove = append(cardsToRemove, index-1)
 			}
 		}
 	} else {
-		fmt.Println("Vous n'avez aucune carte de visite dans votre wallet.")
+		cardsToRemove = append(cardsToRemove, 0)
 	}
-}
 
-func convertStrToIntSlice(input string) []int {
-	slice := make([]int, 0)
-	indices := append(slice, convertToIntSlice(input)...)
-	return uniqueIntSlice(indices)
-}
-
-func convertToIntSlice(input string) []int {
-	slice := make([]int, 0)
-	for _, v := range input {
-		if v >= '0' && v <= '9' {
-			slice = append(slice, int(v-'0'))
-		}
+	for _, index := range cardsToRemove {
+		removedCard := visitCards[index]
+		fmt.Printf("Carte récupérée: %s\n", removedCard.CompanyName)
+		visitCards = append(visitCards[:index], visitCards[index+1:]...)
 	}
-	return slice
-}
-
-func uniqueIntSlice(input []int) []int {
-	keys := make(map[int]bool)
-	result := make([]int, 0)
-
-	for _, entry := range input {
-		if _, value := keys[entry]; !value {
-			keys[entry] = true
-			result = append(result, entry)
-		}
-	}
-	return result
 }
 
 func main() {
-	choice := 0
-	for choice != 9 {
-		fmt.Println("\nBienvenue dans 'Wallet', veuillez choisir une action à effectuer:",
-			"\n1- Voir le solde dans mon compte",
-			"\n2- Faire un dépôt",
-			"\n3- Faire un retrait",
-			"\n4- Déposer une carte",
-			"\n5- Récupérer une carte",
-			"\n6- Déposer une CIN",
-			"\n7- Récupérer une CIN",
-			"\n8- Déposer un permis de conduire",
-			"\n9- Récupérer un permis de conduire",
-			"\n10- Déposer une carte de visite",
-			"\n11- Récupérer des cartes de visite",
-			"\n12- Quitter")
+	for {
+		fmt.Println("\nMenu:")
+		fmt.Println("1. Afficher le solde")
+		fmt.Println("2. Déposer de l'argent")
+		fmt.Println("3. Retirer de l'argent")
+		fmt.Println("4. Déposer une carte bancaire")
+		fmt.Println("5. Récupérer une carte bancaire")
+		fmt.Println("6. Déposer une CIN")
+		fmt.Println("7. Récupérer une CIN")
+		fmt.Println("8. Déposer un permis de conduire")
+		fmt.Println("9. Récupérer un permis de conduire")
+		fmt.Println("10. Déposer une carte de visite")
+		fmt.Println("11. Récupérer des cartes de visite")
+		fmt.Println("12. Quitter")
 
+		var choice string
 		fmt.Print("Votre choix: ")
-		fmt.Scan(&choice)
+		fmt.Scanln(&choice)
 
 		switch choice {
-		case 1:
+		case "1":
 			showBalance()
-		case 2:
-			deposit()
-		case 3:
-			withdraw()
-		case 4:
+		case "2":
+			depositCash()
+		case "3":
+			withdrawCash()
+		case "4":
 			depositCard()
-		case 5:
-			retrieveCard()
-		case 6:
+		case "5":
+			recoveredCard()
+		case "6":
 			depositCIN()
-		case 7:
+		case "7":
 			retrieveAndShowCIN()
-		case 8:
+		case "8":
 			depositDriverLicense()
-		case 9:
+		case "9":
 			retrieveAndShowDriverLicense()
-		case 10:
+		case "10":
 			depositVisitCard()
-		case 11:
+		case "11":
 			retrieveVisitCards()
-		case 12:
-			fmt.Println("Merci d'utiliser le service Wallet. Au revoir! ")
+		case "12":
+			fmt.Println("Au revoir!")
+			return
 		default:
-			fmt.Println("Choix invalide. Veuillez choisir une option valide. ")
+			fmt.Println("Choix invalide. Veuillez choisir un numéro valide.")
 		}
 	}
+}
+
+func amountToFloat(amount string) float64 {
+	amountFloat, _ := strconv.ParseFloat(amount, 64)
+	return amountFloat
 }
