@@ -5,8 +5,7 @@ import java.util.Scanner;
 public class Wallet {
   private static final ArrayList<Transaction> transactions = new ArrayList<>();
   private static double solde = 0;
-  private static final String defaultUsername = "Dinasoa";
-  private static final String defaultPassword = "averystrongpassword";
+  private static double monthlyBudget = 200000;
 
   public static void showBalance() {
     System.out.println("Votre solde actuel: " + solde + " Ar");
@@ -68,6 +67,7 @@ public class Wallet {
     try {
       double budget = Double.parseDouble(budgetStr);
       if (budget > 0) {
+        monthlyBudget = budget;
         System.out.println("Votre budget mensuel a été mis à jour: " + budget + " Ar");
       } else {
         System.out.println("Montant invalide.");
@@ -77,53 +77,7 @@ public class Wallet {
     }
   }
 
-  public static void main(String[] args) {
-    Scanner scanner = new Scanner(System.in);
-    System.out.print("Veuillez entrer votre nom d'utilisateur: ");
-    String username = scanner.nextLine();
-    System.out.print("Veuillez confirmer votre identité en tapant le mot de passe: ");
-    String userPassword = scanner.nextLine();
-
-    if (!username.equals(defaultUsername) || !userPassword.equals(defaultPassword)) {
-      System.out.println("Oups, vous n'avez pas accès à ce wallet, désolé.");
-    } else {
-      int choice;
-
-      do {
-        System.out.println("Bienvenue dans 'Wallet' " + defaultUsername + ", veuillez choisir une action à effectuer:"
-            + "\n1- Voir le solde dans mon compte"
-            + "\n2- Faire un dépôt"
-            + "\n3- Faire un retrait"
-            + "\n4- Afficher l'historique des transactions"
-            + "\n5- Mettre à jour le budget mensuel"
-            + "\n6- Quitter");
-
-        System.out.print("Votre choix: ");
-        choice = scanner.nextInt();
-
-        switch (choice) {
-          case 1:
-            showBalance();
-            break;
-          case 2:
-            deposit();
-            break;
-          case 3:
-            withdraw();
-            break;
-          case 4:
-            showTransactions();
-            break;
-          case 5:
-            setMonthlyBudget();
-            break;
-          case 6:
-            System.out.println("Merci d'utiliser le service Wallet. Au revoir!");
-            break;
-          default:
-            System.out.println("Choix invalide. Veuillez choisir une option valide.");
-        }
-      } while (choice != 6);
-    }
+  public static void showMonthlyBudget(){
+    System.out.println("Votre budget mensuel est: " + monthlyBudget);
   }
 }
