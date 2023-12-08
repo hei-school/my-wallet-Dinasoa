@@ -1,8 +1,10 @@
 import prompt from "readline-sync"
 import {Card} from "./card.js"
+import {CIN} from "./cin.js"
 
 let solde = 0;
-let cards = []
+let cards = [];
+let identityCard = []
 
 export const showBalance = () => {
     console.log(`Votre solde actuel: ${solde} Ar`)
@@ -67,3 +69,37 @@ export const recoveredCard = () => {
         console.log("Vous n'avez aucune carte à récupérer");
     }
 };
+
+export const depositCIN = () => {
+    console.log("Veuillez entrer les informations sur votre CIN: ")
+    let lastname = prompt.question("Nom: ")
+    let firstname = prompt.question("Prenom: ")
+    let birthdate = prompt.question("Date de naissance: ")
+    let deliveryDate = prompt.question("Date de delivrance: ")
+
+    let identity = new CIN(firstname, lastname, birthdate, deliveryDate)
+
+    if(identityCard.length == 0){
+        identityCard.push(identity)
+        console.log("Depot de CIN effectué. ")
+    } else if (identityCard.length == 1){
+        console.log("Votre CIN devrait etre unique")
+    }
+}
+
+export const retrieveCIN = () => {
+    if(identityCard.length > 0){
+        identityCard.pop()
+        console.log("CIN récupérée. ")
+    }
+    console.log("Aucune carte d'identité identifiée. ")
+}
+
+export const showCIN = () => {
+    console.log(`Les details de votre CIN: 
+        Nom: ${lastname}
+        Prenom: ${firstname}
+        Date de naissance: ${birthdate}
+        Date de delivrance: ${deliveryDate}
+    `)
+}

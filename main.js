@@ -1,5 +1,5 @@
 import { auth } from "./auth.js"
-import { showBalance, depositCard, recoveredCard, depositCash, withdrawCash } from "./walletfeatures.js"
+import { showBalance, depositCard, recoveredCard, depositCash, withdrawCash, depositCIN, retrieveCIN, showCIN } from "./walletfeatures.js"
 
 import prompt from "readline-sync"
 
@@ -15,7 +15,9 @@ const main = () => {
                 3- Faire un retrait
                 4- Deposer une carte bancaire
                 5- Recuperer une carte bancaire
-                6- Quitter`);
+                6- Deposer une CIN
+                7- Recuperer une CIN
+                8- Quitter`);
 
                 choice = +prompt.question("Votre choix: ");
 
@@ -36,13 +38,22 @@ const main = () => {
                     recoveredCard()
                     break;
                 case 6:
+                    depositCIN()
+                    break;
+                case 7: 
+                    retrieveCIN()
+                    break;
+                case 8:
+                    showCIN()
+                    break;
+                case 9:
                     console.log("Merci d'utiliser le service Wallet. Au revoir!");
                     break;
                 default:
                     console.log("Choix invalide. Veuillez choisir une option valide.");
 
                 }
-        } while (choice != 7)
+        } while (choice != 9)
     }
 }
 
