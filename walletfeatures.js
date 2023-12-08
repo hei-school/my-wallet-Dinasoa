@@ -1,30 +1,28 @@
 import prompt from "readline-sync"
+import {Card} from "./card.js"
 
 let solde = 0;
-let transactions = []
-let monthlyBudget = 200000
+let cards = []
 
 export const showBalance = () => {
     console.log(`Votre solde actuel: ${solde} Ar`)
 }
 
-export const deposit = () => {
+export const depositCash = () => {
     const amount = parseFloat(prompt.question("Veuillez saisir le montant à déposer: Ar"));
     if(!isNaN(amount) && amount > 0){
         solde += amount;
-        transactions.push(`Dépot de ${amount} Ar`)
         console.log(`Dépot effectué! `)
     } else {
         console.log("Le montant que vous avez saisi est invalide, veuillez verifier! ")
     }
 }
 
-export const withdraw = () => {
+export const withdrawCash = () => {
     const amount = parseFloat(prompt.question("Veuillez saisir le montant à retirer: Ar"));
     if(!isNaN(amount) && amount > 0){
         if(amount <= solde){
             solde -= amount
-            transactions.push(`Retrait de ${amount} Ar. `)
             console.log("Retrait effectué. ")
         } else {
             console.log("Votre solde est insuffisant. ")
@@ -34,23 +32,38 @@ export const withdraw = () => {
     }
 }
 
-export const showTransactions = () => {
-    console.log("Historique de transactions: ")
-    for (const transaction of transactions) {
-        console.log(transaction);
-    }
+export const depositCard = () => {
+    let type = prompt.question("Veuillez saisir le type de carte: ")
+    let amount = prompt.question("Veuillez saisir le montant dans votre carte: ")
+    let expirationDate = prompt.question("Veuillez saisir la date d'expiration de la carte: ")
+    let cardHolder = prompt.question("Veuillez saisir le propriétaire de cette carte: ")
+    let cardNumber = prompt.question("Veuillez saisir le numero de carte: ")
+
+    const card = new Card(type, amount, expirationDate, cardHolder, cardNumber)
+    solde += parseFloat(card.amount)
+    cards.push(card)
+
+    console.log("Votre carte bancaire a bien été deposée. ")
 }
 
-export const setMonthlyBudget = () => {
-    const budget = parseFloat(prompt.question("Veuillez saisir votre nouveau budget mensuel: Ar"))
-    if(!isNaN(budget) && budget > 0){
-        monthlyBudget = budget;
-        console.log(`Votre budget mensuel a été mis à jour: ${monthlyBudget} Ar`);
-    }else{
-        console.log("Montant invalide. ")
-    }
-}
+export const recoveredCard = () => {
+    if (cards.length >= 1) {
+        console.log("Cartes disponibles à récupérer:");
+        for (let i = 0; i < cards.length; i++) {
+            console.log(`${i+1}- Type: ${cards[i].type}, Numéro de carte: ${cards[i].cardNumber}`);
+        }
 
-export const showMonthlyBudget = () => {
-    console.log(`Votre budget mensuel est: ${monthlyBudget}`)
-}
+        let question = parseInt(prompt.question("Quelle carte voulez-vous récupérer (entrez le numéro correspondant): "));
+        
+        if (question >= 1 && question <= cards.length) {
+            cardIndex = question - 1
+            let recoveredCard = cards.splice(cardIndex, 1)[0];
+            solde -= recoveredCard.amount;
+            console.log(`La carte récupérée: Type - ${recoveredCard.type}, Numéro de carte - ${recoveredCard.cardNumber}`);
+        } else {
+            console.log("Veuillez ne saisir que les choix proposés.");
+        }
+    } else {
+        console.log("Vous n'avez aucune carte à récupérer");
+    }
+};

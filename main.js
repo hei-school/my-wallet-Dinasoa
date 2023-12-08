@@ -1,5 +1,5 @@
 import { auth } from "./auth.js"
-import { showBalance, deposit, withdraw, showTransactions, setMonthlyBudget, showMonthlyBudget } from "./walletfeatures.js"
+import { showBalance, depositCard, recoveredCard, depositCash, withdrawCash } from "./walletfeatures.js"
 
 import prompt from "readline-sync"
 
@@ -13,10 +13,9 @@ const main = () => {
                 1- Voir le solde dans mon compte
                 2- Faire un dépôt
                 3- Faire un retrait
-                4- Afficher l'historique des transactions
-                5- Mettre à jour le budget mensuel
-                6- Afficher le budget mensuel
-                7- Quitter`);
+                4- Deposer une carte bancaire
+                5- Recuperer une carte bancaire
+                6- Quitter`);
 
                 choice = +prompt.question("Votre choix: ");
 
@@ -25,20 +24,18 @@ const main = () => {
                     showBalance()
                     break;
                 case 2:
-                    deposit()
+                    depositCash()
                     break;
                 case 3:
-                    withdraw()
+                    withdrawCash()
                     break;
-                case 4:
-                    showTransactions();
+                case 4: 
+                    depositCard()
                     break;
-                case 5:
-                    setMonthlyBudget();
+                case 5: 
+                    recoveredCard()
                     break;
                 case 6:
-                    showMonthlyBudget();
-                case 7:
                     console.log("Merci d'utiliser le service Wallet. Au revoir!");
                     break;
                 default:
