@@ -10,11 +10,16 @@ public class Main {
                 System.out.println("Bienvenue dans 'Wallet' , veuillez choisir une action à effectuer:"
                         + "\n1- Voir le solde dans mon compte"
                         + "\n2- Faire un dépôt"
-                        + "\n3- Faire un retrait"
-                        + "\n4- Afficher l'historique des transactions"
-                        + "\n5- Mettre à jour le budget mensuel"
-                        + "\n6- Afficher le budget mensuel"
-                        + "\n7- Quitter");
+                        + "\n3- Faire un retrait en cash"
+                        + "\n4- Deposer une carte de credit"
+                        + "\n5- Recuperer une carte de credit"
+                        + "\n6- Deposer une CIN"
+                        + "\n7- Recuperer et afficher les informations de la CIN"
+                        + "\n8- Deposer un permis de conduire"
+                        + "\n9- Recuperer et afficher les informations du permis de conduire"
+                        + "\n10- Deposer une carte de visite"
+                        + "\n11- Recuperer une ou plusieurs cartes de visite"
+                        + "\n12- Quitter");
 
                 System.out.print("Votre choix: ");
                 choice = scanner.nextInt();
@@ -24,26 +29,42 @@ public class Main {
                         Wallet.showBalance();
                         break;
                     case 2:
-                        Wallet.deposit();
+                        Wallet.depositCash();
                         break;
                     case 3:
-                        Wallet.withdraw();
+                        Wallet.withdrawCash();
                         break;
                     case 4:
-                        Wallet.showTransactions();
+                        Wallet.depositCard();
                         break;
                     case 5:
-                        Wallet.setMonthlyBudget();
+                        Wallet.recoveredCard();
                         break;
                     case 6:
-                        Wallet.showMonthlyBudget();
+                       Wallet.depositCIN();
+                       break;
                     case 7:
+                        Wallet.retrieveAndShowCIN();
+                        break;
+                    case 8:
+                        Wallet.depositDriverLicense();
+                        break;
+                    case 9:
+                        Wallet.retrieveAndShowDriverLicense();
+                        break;
+                    case 10:
+                        Wallet.depositVisitCard();
+                        break;
+                    case 11:
+                        Wallet.retrieveVisitCards();
+                        break;
+                    case 12:
                         System.out.println("Merci d'utiliser le service Wallet. Au revoir!");
                         break;
                     default:
                         System.out.println("Choix invalide. Veuillez choisir une option valide.");
                 }
-            } while (choice != 7);
+            } while (choice != 12);
         }
     }
 }
