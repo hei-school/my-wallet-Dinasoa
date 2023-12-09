@@ -1,5 +1,5 @@
 import { auth } from "./auth.js"
-import { showBalance, depositCard, recoveredCard, depositCash, withdrawCash, depositCIN, depositDriverLicense, retrieveAndShowDriverLicense } from "./walletfeatures.js"
+import { showBalance, depositCard, recoveredCard, depositCash, withdrawCash, depositCIN, depositDriverLicense, retrieveAndShowDriverLicense, retrieveVisitCards, depositVistCard } from "./walletfeatures.js"
 
 import prompt from "readline-sync"
 
@@ -12,13 +12,15 @@ const main = () => {
                 console.log(`Bienvenue dans "Wallet", veuillez choisir une action à effectuer:
                 1- Voir le solde dans mon compte
                 2- Faire un dépôt
-                3- Faire un retrait
+                3- Faire un retrait en cash
                 4- Deposer une carte bancaire
                 5- Recuperer une carte bancaire
                 6- Deposer une CIN
                 7- Recuperer une CIN
                 8- Deposer un permis de conduire
                 9- Recuperer et afficher les informations d'un permis de conduire
+                10- Deposer une carte de visite
+                11- Recuperer une carte de visite
                 10- Quitter`);
 
                 choice = +prompt.question("Votre choix: ");
@@ -52,13 +54,19 @@ const main = () => {
                     retrieveAndShowDriverLicense()
                     break;
                 case 10:
+                    depositVistCard()
+                    break;
+                case 11:
+                    retrieveVisitCards()
+                    break;
+                case 12:
                     console.log("Merci d'utiliser le service Wallet. Au revoir!");
                     break;
                 default:
                     console.log("Choix invalide. Veuillez choisir une option valide.");
 
                 }
-        } while (choice != 10)
+        } while (choice != 12)
     }
 }
 

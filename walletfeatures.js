@@ -1,14 +1,15 @@
 import prompt from "readline-sync"
 import {Card} from "./card.js"
 import {CIN} from "./cin.js"
-import { DriverLicences } from "./driverlicense.js";
+import { DriverLicences } from "./driverLicense.js";
+import { VisitCard } from "./visitCard.js";
 
 let solde = 0;
 let cards = [];
 let identityCard = []
 let driverlicense = []
 let driverLicenseTypes = []
-
+let visitCards = []
 
 export const showBalance = () => {
     console.log(`Votre solde actuel: ${solde} Ar`)
@@ -141,8 +142,7 @@ export const retrieveAndShowDriverLicense = () => {
 
         if(driverLicenseTypes.length > 0){
             for (let i = 0; i < driverLicenseTypes.length; i++) {
-                console.log(`${i} - ${driverLicenseTypes[i]}`);
-                
+                console.log(`${i + 1} - ${driverLicenseTypes[i]}`);   
             }
         }
         driverlicense.pop()
@@ -151,6 +151,52 @@ export const retrieveAndShowDriverLicense = () => {
         console.log("Aucun permis de conduire identifié. ")
     }
 }
+
+export const depositVistCard = () => {
+    console.log("Veuillez renseigner les informations de votre carte de visite: ")
+    let lastname = prompt.question("Nom: ")
+    let firstname = prompt.question("Prenom: ")
+    let fonction = prompt.question("Poste: ")
+    let companyName = prompt.question("Entreprise: ")
+
+    if(visitCards.length <= 3){
+        visitCards.push(new VisitCard(lastname, firstname, fonction, companyName))
+        console.log("Carte de visite enregistré. ")    
+    } else {
+        console.log("Plus d'espace. ")
+    }
+}
+
+export const retrieveVisitCards = () => {
+    let cardsToRemove = [];
+  
+    if (!visitCards.length) {
+      console.log("Vous n'avez aucune carte de visite dans votre wallet.");
+      return;
+    }
+  
+    if (visitCards.length > 1) {
+      console.log("Sélectionnez les cartes que vous voulez récupérer (ex: 1,2):");
+      for (let i = 0; i < visitCards.length; i++) {
+        console.log(`${i + 1} - ${visitCards[i].companyName}`);
+      }
+  
+      const choice = prompt.question("Carte à récupérer: "); 
+  
+      if (contains(choice, ",")) {
+        cardsToRemove = choice.split(",").map(index => parseInt(index) - 1);
+      } else if (!contains(choice, ",")) {
+        cardsToRemove = [parseInt(choice) - 1];
+      }
+    } else {
+      cardsToRemove = [0];
+    }
+  
+    for (const index of cardsToRemove.reverse()) {
+      const removedCard = visitCards.splice(index, 1)[0]; // Remove the card and store it
+      console.log(`Carte récupérée: ${removedCard.companyName}`);
+    }
+  };
 
 const contains = (string, word) => {
     for (let i = 0; i < string.length; i++) {
