@@ -68,14 +68,14 @@ The project structure is as follows:
 
 ```tree
 
-└───main.js (Entry point)
-└───walletfeatures.js (Implementation of features)
-└───auth.js (Authentication implementation)
-└───about.js (Common class)
-└───card.js (Card class)
-└───cin.js (CIN class)
-└───driverlicense.js (CIN class)
-└───visitCard.js (CIN class)
+└───Main.java (Entry point)
+└───Auth.java (Authentication implementation)
+└───Card.java (Bank card class)
+└───CIN.java (National identity class) 
+└───DriverLicense.java (Driver's license class)
+└───VisitCard.java (Visit card class)
+└───Wallet.java (Features implementation)
+└───About.java (User information class)
 
 ```
 
