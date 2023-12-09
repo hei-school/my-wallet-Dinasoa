@@ -1,8 +1,8 @@
-export class CIN{
+import { About } from "./about.js"
+
+export class CIN extends About{
     constructor(firstname, lastname, birthdate, deliveryDate){
-        this.firstname = firstname
-        this.lastname = lastname
-        this.birthdate = birthdate
+        super(firstname, lastname, birthdate)
         this.deliveryDate = deliveryDate
     }
 }

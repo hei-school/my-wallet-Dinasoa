@@ -4,7 +4,6 @@ export class Card {
         this.cardNumber = cardNumber
         this.expiration_date = expirationDate
         this.cardHolder = cardHolder
-        this.verificationCode = verificationCode
         this.amount = amount
     }
 }
