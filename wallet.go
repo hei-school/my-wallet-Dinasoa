@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"os"
 )
 
 type Card struct {
@@ -260,55 +261,76 @@ func retrieveVisitCards() {
 }
 
 func main() {
-	for {
-		fmt.Println("\nMenu:")
-		fmt.Println("1. Afficher le solde")
-		fmt.Println("2. Déposer de l'argent")
-		fmt.Println("3. Retirer de l'argent")
-		fmt.Println("4. Déposer une carte bancaire")
-		fmt.Println("5. Récupérer une carte bancaire")
-		fmt.Println("6. Déposer une CIN")
-		fmt.Println("7. Récupérer une CIN")
-		fmt.Println("8. Déposer un permis de conduire")
-		fmt.Println("9. Récupérer un permis de conduire")
-		fmt.Println("10. Déposer une carte de visite")
-		fmt.Println("11. Récupérer des cartes de visite")
-		fmt.Println("12. Quitter")
+	if auth() {
+		var choice int
 
-		var choice string
-		fmt.Print("Votre choix: ")
-		fmt.Scanln(&choice)
+		for {
+			fmt.Println(`Bienvenue dans "Wallet", veuillez choisir une action à effectuer:
+                1- Voir le solde dans mon compte
+                2- Faire un dépôt
+                3- Faire un retrait en cash
+                4- Deposer une carte bancaire
+                5- Recuperer une carte bancaire
+                6- Deposer une CIN
+                7- Recuperer une CIN
+                8- Deposer un permis de conduire
+                9- Recuperer et afficher les informations d'un permis de conduire
+                10- Deposer une carte de visite
+                11- Recuperer une carte de visite
+                12- Quitter`)
 
-		switch choice {
-		case "1":
-			showBalance()
-		case "2":
-			depositCash()
-		case "3":
-			withdrawCash()
-		case "4":
-			depositCard()
-		case "5":
-			recoveredCard()
-		case "6":
-			depositCIN()
-		case "7":
-			retrieveAndShowCIN()
-		case "8":
-			depositDriverLicense()
-		case "9":
-			retrieveAndShowDriverLicense()
-		case "10":
-			depositVisitCard()
-		case "11":
-			retrieveVisitCards()
-		case "12":
-			fmt.Println("Au revoir!")
-			return
-		default:
-			fmt.Println("Choix invalide. Veuillez choisir un numéro valide.")
+			fmt.Print("Votre choix: ")
+			fmt.Scanln(&choice)
+
+			switch choice {
+			case 1:
+				showBalance()
+			case 2:
+				depositCash()
+			case 3:
+				withdrawCash()
+			case 4:
+				depositCard()
+			case 5:
+				recoveredCard()
+			case 6:
+				depositCIN()
+			case 7:
+				retrieveAndShowCIN()
+			case 8:
+				depositDriverLicense()
+			case 9:
+				retrieveAndShowDriverLicense()
+			case 10:
+				depositVisitCard()
+			case 11:
+				retrieveVisitCards()
+			case 12:
+				fmt.Println("Merci d'utiliser le service Wallet. Au revoir!")
+				os.Exit(0)
+			default:
+				fmt.Println("Choix invalide. Veuillez choisir une option valide.")
+			}
 		}
 	}
+}
+
+func auth() bool {
+	defaultUsername := "random"
+	defaultPassword := "strongpassword"
+
+	var username, userPassword string
+
+	fmt.Print("Veuillez entrer votre nom d'utilisateur: ")
+	fmt.Scanln(&username)
+	fmt.Print("Veuillez confirmer votre identité en tapant le mot de passe: ")
+	fmt.Scanln(&userPassword)
+
+	if username != defaultUsername || userPassword != defaultPassword {
+		fmt.Println("Oups, vous n'avez pas accès à ce wallet, désolé.")
+		return false
+	}
+	return true
 }
 
 func amountToFloat(amount string) float64 {
